@@ -144,15 +144,11 @@ func (repository *TodolistRepositoryImpl) FindById(dbPath, todolistIdParam strin
 				foundedTodolist.Tags = append(foundedTodolist.Tags, tag.(string))
 			}
 
-			break
+			return foundedTodolist, nil
 		}
 	}
 
-	if foundedTodolist.Id == "" {
-		return foundedTodolist, errors.New("todolist is not found")
-	} else {
-		return foundedTodolist, nil
-	}
+	return foundedTodolist, errors.New("todolist is not found")
 }
 
 func (repository *TodolistRepositoryImpl) FindAll(dbPath string) []domain.Todolist {
