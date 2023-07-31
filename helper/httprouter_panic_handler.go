@@ -15,10 +15,10 @@ func internalServerError(writer http.ResponseWriter, request *http.Request, err 
 	webResponse := web.WebResponse{
 		Code:   500,
 		Status: "failed",
-		Data:   err,
+		Data:   "something went wrong",
 	}
 
-	WriteToResponseBody(writer, webResponse)
+	WriteToResponseBody(writer, webResponse, 500)
 }
 
 func notFoundError(writer http.ResponseWriter, request *http.Request, err any) bool {
@@ -34,7 +34,7 @@ func notFoundError(writer http.ResponseWriter, request *http.Request, err any) b
 			Data:   exception.Error,
 		}
 
-		WriteToResponseBody(writer, webResponse)
+		WriteToResponseBody(writer, webResponse, 404)
 
 		return true
 	} else {
@@ -43,7 +43,7 @@ func notFoundError(writer http.ResponseWriter, request *http.Request, err any) b
 }
 
 func reqBodyMalformedError(writer http.ResponseWriter, request *http.Request, err any) bool {
-	exception, isError := err.(exception.ReqBodyMalformedError)
+	_, isError := err.(exception.ReqBodyMalformedError)
 
 	if isError {
 		writer.Header().Add("Content-Type", "application/json")
@@ -52,10 +52,10 @@ func reqBodyMalformedError(writer http.ResponseWriter, request *http.Request, er
 		webResponse := web.WebResponse{
 			Code:   400,
 			Status: "failed",
-			Data:   exception.Error,
+			Data:   "request body is invalid",
 		}
 
-		WriteToResponseBody(writer, webResponse)
+		WriteToResponseBody(writer, webResponse, 400)
 
 		return true
 	} else {
@@ -64,7 +64,7 @@ func reqBodyMalformedError(writer http.ResponseWriter, request *http.Request, er
 }
 
 func validationError(writer http.ResponseWriter, request *http.Request, err any) bool {
-	exception, isError := err.(validator.ValidationErrors)
+	_, isError := err.(validator.ValidationErrors)
 
 	if isError {
 		writer.Header().Add("Content-Type", "application/json")
@@ -73,10 +73,10 @@ func validationError(writer http.ResponseWriter, request *http.Request, err any)
 		webResponse := web.WebResponse{
 			Code:   400,
 			Status: "failed",
-			Data:   exception.Error(),
+			Data:   "request body is invalid",
 		}
 
-		WriteToResponseBody(writer, webResponse)
+		WriteToResponseBody(writer, webResponse, 400)
 
 		return true
 	} else {

@@ -32,7 +32,7 @@ func (controller *TodolistControllerImpl) Create(writer http.ResponseWriter, req
 		Data:   todolistResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, webResponse, 201)
 }
 
 func (controller *TodolistControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -49,7 +49,7 @@ func (controller *TodolistControllerImpl) Update(writer http.ResponseWriter, req
 		Data:   todolistResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, webResponse, 200)
 }
 
 func (controller *TodolistControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -60,7 +60,7 @@ func (controller *TodolistControllerImpl) Delete(writer http.ResponseWriter, req
 		Status: "success",
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, webResponse, 200)
 }
 
 func (controller *TodolistControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -71,5 +71,5 @@ func (controller *TodolistControllerImpl) FindAll(writer http.ResponseWriter, re
 		Data:   todolistsResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, webResponse, 200)
 }
