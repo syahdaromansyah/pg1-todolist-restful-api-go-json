@@ -9,6 +9,7 @@ import (
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/helper"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/lib"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/domain"
+	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/scheme"
 )
 
 type TodolistRepositoryImpl struct{}
@@ -21,30 +22,32 @@ func (repository *TodolistRepositoryImpl) Save(dbPath string, todolistRequest do
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
-	todolistsJsonMap := map[string]any{}
+	todolistsDB := &scheme.TodolistDB{}
 
-	jsonUnmarshallErr := json.Unmarshal(todolistsJsonBytes, &todolistsJsonMap)
-	helper.DoPanicIfError(jsonUnmarshallErr)
+	if err := json.Unmarshal(todolistsJsonBytes, todolistsDB); err != nil {
+		helper.DoPanicIfError(err)
+	}
 
 	newId := lib.GetRandomStdId32()
 	createdAt := time.Now().Format(time.RFC3339)
 	updatedAt := &createdAt
 
-	todolistsJsonMap["total"] = int(todolistsJsonMap["total"].(float64)) + 1
-	todolistsJsonMap["todolists"] = append(todolistsJsonMap["todolists"].([]any), map[string]any{
-		"id":              newId,
-		"done":            false,
-		"tags":            todolistRequest.Tags,
-		"todolistMessage": todolistRequest.TodolistMessage,
-		"createdAt":       createdAt,
-		"updatedAt":       *updatedAt,
+	todolistsDB.Total = todolistsDB.Total + 1
+	todolistsDB.Todolists = append(todolistsDB.Todolists, domain.Todolist{
+		Id:              newId,
+		Done:            false,
+		Tags:            todolistRequest.Tags,
+		TodolistMessage: todolistRequest.TodolistMessage,
+		CreatedAt:       createdAt,
+		UpdatedAt:       *updatedAt,
 	})
 
-	jsonMarshalledBytes, err := json.Marshal(todolistsJsonMap)
+	marshalledTodolistDB, err := json.Marshal(todolistsDB)
 	helper.DoPanicIfError(err)
 
-	writeFileErr := os.WriteFile(dbPath, jsonMarshalledBytes, 0644)
-	helper.DoPanicIfError(writeFileErr)
+	if err := os.WriteFile(dbPath, marshalledTodolistDB, 0644); err != nil {
+		helper.DoPanicIfError(err)
+	}
 
 	todolistRequest.Id = newId
 	todolistRequest.CreatedAt = createdAt
