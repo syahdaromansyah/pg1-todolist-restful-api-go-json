@@ -24,9 +24,8 @@ func (repository *TodolistRepositoryImpl) Save(dbPath string, todolistRequest do
 
 	todolistsDB := &scheme.TodolistDB{}
 
-	if err := json.Unmarshal(todolistsJsonBytes, todolistsDB); err != nil {
-		helper.DoPanicIfError(err)
-	}
+	unMarshallErr := json.Unmarshal(todolistsJsonBytes, todolistsDB)
+	helper.DoPanicIfError(unMarshallErr)
 
 	newId := lib.GetRandomStdId32()
 	createdAt := time.Now().Format(time.RFC3339)
@@ -45,9 +44,8 @@ func (repository *TodolistRepositoryImpl) Save(dbPath string, todolistRequest do
 	marshalledTodolistDB, err := json.Marshal(todolistsDB)
 	helper.DoPanicIfError(err)
 
-	if err := os.WriteFile(dbPath, marshalledTodolistDB, 0644); err != nil {
-		helper.DoPanicIfError(err)
-	}
+	writeFileErr := os.WriteFile(dbPath, marshalledTodolistDB, 0644)
+	helper.DoPanicIfError(writeFileErr)
 
 	todolistRequest.Id = newId
 	todolistRequest.CreatedAt = createdAt
