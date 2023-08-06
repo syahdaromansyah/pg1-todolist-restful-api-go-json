@@ -60,32 +60,30 @@ func (repository *TodolistRepositoryImpl) Update(dbPath string, todolistRequest 
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
-	todolistsJsonMap := map[string]any{}
+	todolistsDB := &scheme.TodolistDB{}
 
-	jsonUnmarshallErr := json.Unmarshal(todolistsJsonBytes, &todolistsJsonMap)
-	helper.DoPanicIfError(jsonUnmarshallErr)
+	unMarshallErr := json.Unmarshal(todolistsJsonBytes, todolistsDB)
+	helper.DoPanicIfError(unMarshallErr)
 
-	todolists := todolistsJsonMap["todolists"].([]any)
+	todolists := todolistsDB.Todolists
 
 	for idx, todolist := range todolists {
-		todolistId := todolist.(map[string]any)["id"].(string)
-		if todolistRequest.Id == todolistId {
+		if todolistRequest.Id == todolist.Id {
 			updatedAt := time.Now().Format(time.RFC3339)
-
-			todolistsJsonMap["todolists"].([]any)[idx].(map[string]any)["tags"] = todolistRequest.Tags
-			todolistsJsonMap["todolists"].([]any)[idx].(map[string]any)["done"] = todolistRequest.Done
-			todolistsJsonMap["todolists"].([]any)[idx].(map[string]any)["todolistMessage"] = todolistRequest.TodolistMessage
-			todolistsJsonMap["todolists"].([]any)[idx].(map[string]any)["updatedAt"] = updatedAt
+			todolistsDB.Todolists[idx].Tags = todolistRequest.Tags
+			todolistsDB.Todolists[idx].Done = todolistRequest.Done
+			todolistsDB.Todolists[idx].TodolistMessage = todolistRequest.TodolistMessage
+			todolistsDB.Todolists[idx].UpdatedAt = todolistRequest.UpdatedAt
 
 			todolistRequest.UpdatedAt = updatedAt
 			break
 		}
 	}
 
-	jsonMarshalledBytes, err := json.Marshal(todolistsJsonMap)
+	marshalledTodolistDB, err := json.Marshal(todolistsDB)
 	helper.DoPanicIfError(err)
 
-	writeFileErr := os.WriteFile(dbPath, jsonMarshalledBytes, 0644)
+	writeFileErr := os.WriteFile(dbPath, marshalledTodolistDB, 0644)
 	helper.DoPanicIfError(writeFileErr)
 
 	return todolistRequest
