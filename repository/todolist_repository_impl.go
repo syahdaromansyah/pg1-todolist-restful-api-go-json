@@ -91,25 +91,24 @@ func (repository *TodolistRepositoryImpl) Delete(dbPath string, todolistRequest 
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
-	todolistsJsonMap := map[string]any{}
+	todolistsDB := &scheme.TodolistDB{}
 
-	jsonUnmarshallErr := json.Unmarshal(todolistsJsonBytes, &todolistsJsonMap)
-	helper.DoPanicIfError(jsonUnmarshallErr)
+	unMarshallErr := json.Unmarshal(todolistsJsonBytes, todolistsDB)
+	helper.DoPanicIfError(unMarshallErr)
 
-	todolists := todolistsJsonMap["todolists"].([]any)
-	todolistsJsonMap["todolists"] = []any{}
+	todolists := todolistsDB.Todolists
+	todolistsDB.Todolists = []domain.Todolist{}
 
 	for _, todolist := range todolists {
-		todolistId := todolist.(map[string]any)["id"].(string)
-		if todolistRequest.Id == todolistId {
-			todolistsJsonMap["total"] = int(todolistsJsonMap["total"].(float64)) - 1
+		if todolistRequest.Id == todolist.Id {
+			todolistsDB.Total = todolistsDB.Total - 1
 			continue
 		}
 
-		todolistsJsonMap["todolists"] = append(todolistsJsonMap["todolists"].([]any), todolist)
+		todolistsDB.Todolists = append(todolistsDB.Todolists, todolist)
 	}
 
-	jsonMarshalledBytes, err := json.Marshal(todolistsJsonMap)
+	jsonMarshalledBytes, err := json.Marshal(todolistsDB)
 	helper.DoPanicIfError(err)
 
 	writeFileErr := os.WriteFile(dbPath, jsonMarshalledBytes, 0644)
