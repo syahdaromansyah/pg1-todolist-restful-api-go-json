@@ -58,6 +58,7 @@ func (controller *TodolistControllerImpl) Delete(writer http.ResponseWriter, req
 	webResponse := web.WebResponse{
 		Code:   200,
 		Status: "success",
+		Data:   struct{}{},
 	}
 
 	helper.WriteToResponseBody(writer, webResponse, 200)
