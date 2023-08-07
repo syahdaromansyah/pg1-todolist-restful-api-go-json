@@ -152,26 +152,27 @@ func (repository *TodolistRepositoryImpl) FindAll(dbPath string) []domain.Todoli
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
-	todolistsJsonMap := map[string]any{}
+	todolistsDB := &scheme.TodolistDB{}
 
-	jsonUnmarshallErr := json.Unmarshal(todolistsJsonBytes, &todolistsJsonMap)
-	helper.DoPanicIfError(jsonUnmarshallErr)
+	unMarshallErr := json.Unmarshal(todolistsJsonBytes, todolistsDB)
+	helper.DoPanicIfError(unMarshallErr)
 
-	todolistsJson := todolistsJsonMap["todolists"].([]any)
+	todolistsJson := todolistsDB.Todolists
 	todolists := []domain.Todolist{}
 
 	for _, todolist := range todolistsJson {
 		todolistData := domain.Todolist{
-			Id:              todolist.(map[string]any)["id"].(string),
-			Done:            todolist.(map[string]any)["done"].(bool),
-			Tags:            []string{},
-			TodolistMessage: todolist.(map[string]any)["todolistMessage"].(string),
-			CreatedAt:       todolist.(map[string]any)["createdAt"].(string),
-			UpdatedAt:       todolist.(map[string]any)["updatedAt"].(string),
+			Id:              todolist.Id,
+			Done:            todolist.Done,
+			TodolistMessage: todolist.TodolistMessage,
+			CreatedAt:       todolist.CreatedAt,
+			UpdatedAt:       todolist.UpdatedAt,
 		}
 
-		for _, tag := range todolist.(map[string]any)["tags"].([]any) {
-			todolistData.Tags = append(todolistData.Tags, tag.(string))
+		if len(todolist.Tags) == 0 {
+			todolistData.Tags = []string{}
+		} else {
+			todolistData.Tags = append(todolistData.Tags, todolist.Tags...)
 		}
 
 		todolists = append(todolists, todolistData)
