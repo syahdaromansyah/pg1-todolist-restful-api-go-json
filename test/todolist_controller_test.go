@@ -435,14 +435,14 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 	resBodyBytes, err := io.ReadAll(response.Body)
 	helper.DoPanicIfError(err)
 
-	resBody := &WebResponseTest[string]{}
+	resBody := &WebResponseTest[struct{}]{}
 
 	err = json.Unmarshal(resBodyBytes, resBody)
 	helper.DoPanicIfError(err)
 
 	assert.Equal(t, 200, resBody.Code)
 	assert.Equal(t, "success", resBody.Status)
-	assert.Equal(t, "", resBody.Data)
+	assert.Equal(t, struct{}{}, resBody.Data)
 
 	_, err = repository.NewTodolistRepositoryImpl().FindById(dbPath, initialData.Id)
 
