@@ -119,27 +119,26 @@ func (repository *TodolistRepositoryImpl) FindById(dbPath, todolistIdParam strin
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
-	todolistsJsonMap := map[string]any{}
+	todolistsDB := &scheme.TodolistDB{}
 
-	jsonUnmarshallErr := json.Unmarshal(todolistsJsonBytes, &todolistsJsonMap)
-	helper.DoPanicIfError(jsonUnmarshallErr)
+	unMarshallErr := json.Unmarshal(todolistsJsonBytes, todolistsDB)
+	helper.DoPanicIfError(unMarshallErr)
 
-	todolists := todolistsJsonMap["todolists"].([]any)
+	todolists := todolistsDB.Todolists
 	foundedTodolist := domain.Todolist{}
 
 	for _, todolist := range todolists {
-		todolistId := todolist.(map[string]any)["id"].(string)
+		if todolistIdParam == todolist.Id {
+			foundedTodolist.Id = todolist.Id
+			foundedTodolist.Done = todolist.Done
+			foundedTodolist.TodolistMessage = todolist.TodolistMessage
+			foundedTodolist.CreatedAt = todolist.CreatedAt
+			foundedTodolist.UpdatedAt = todolist.UpdatedAt
 
-		if todolistIdParam == todolistId {
-			foundedTodolist.Id = todolistId
-			foundedTodolist.Done = todolist.(map[string]any)["done"].(bool)
-			foundedTodolist.Tags = []string{}
-			foundedTodolist.TodolistMessage = todolist.(map[string]any)["todolistMessage"].(string)
-			foundedTodolist.CreatedAt = todolist.(map[string]any)["createdAt"].(string)
-			foundedTodolist.UpdatedAt = todolist.(map[string]any)["updatedAt"].(string)
-
-			for _, tag := range todolist.(map[string]any)["tags"].([]any) {
-				foundedTodolist.Tags = append(foundedTodolist.Tags, tag.(string))
+			if len(todolist.Tags) == 0 {
+				foundedTodolist.Tags = []string{}
+			} else {
+				foundedTodolist.Tags = append(foundedTodolist.Tags, todolist.Tags...)
 			}
 
 			return foundedTodolist, nil
