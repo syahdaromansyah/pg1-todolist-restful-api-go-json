@@ -71,7 +71,7 @@ func (repository *TodolistRepositoryImpl) Update(dbPath string, todolistRequest 
 			todolistsDB.Todolists[idx].Tags = todolistRequest.Tags
 			todolistsDB.Todolists[idx].Done = todolistRequest.Done
 			todolistsDB.Todolists[idx].TodolistMessage = todolistRequest.TodolistMessage
-			todolistsDB.Todolists[idx].UpdatedAt = todolistRequest.UpdatedAt
+			todolistsDB.Todolists[idx].UpdatedAt = updatedAt
 
 			todolistRequest.UpdatedAt = updatedAt
 			break
