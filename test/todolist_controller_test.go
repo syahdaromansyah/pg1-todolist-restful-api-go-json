@@ -209,7 +209,7 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 		TodolistMessage: "Initial Todo",
 	})
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(300 * time.Millisecond)
 
 	tableTests := []struct {
 		Done            bool
@@ -311,7 +311,7 @@ func TestUpdateTodolistFailed(t *testing.T) {
 		TodolistMessage: "Initial Todo",
 	})
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(300 * time.Millisecond)
 
 	tableTests := []struct {
 		Id              string
@@ -418,7 +418,7 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 		TodolistMessage: "Initial Todo",
 	})
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(300 * time.Millisecond)
 
 	router := setupRouterTest()
 
@@ -460,7 +460,7 @@ func TestDeleteTodolistFailed(t *testing.T) {
 		TodolistMessage: "Initial Todo",
 	})
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(300 * time.Millisecond)
 
 	router := setupRouterTest()
 
