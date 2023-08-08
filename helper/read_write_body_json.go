@@ -7,7 +7,7 @@ import (
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/exception"
 )
 
-func ReadFromRequestBody(request *http.Request, result any) {
+func ReadFromRequestBody[T any](request *http.Request, result T) {
 	jsonDecoder := json.NewDecoder(request.Body)
 	err := jsonDecoder.Decode(result)
 
@@ -16,7 +16,7 @@ func ReadFromRequestBody(request *http.Request, result any) {
 	}
 }
 
-func WriteToResponseBody(writer http.ResponseWriter, response any, statusCode int) {
+func WriteToResponseBody[T any](writer http.ResponseWriter, response T, statusCode int) {
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(statusCode)
 	jsonEncoder := json.NewEncoder(writer)

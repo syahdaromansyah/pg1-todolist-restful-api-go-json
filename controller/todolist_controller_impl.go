@@ -26,7 +26,7 @@ func (controller *TodolistControllerImpl) Create(writer http.ResponseWriter, req
 
 	todolistResponse := controller.TodolistService.Create(todolistCreateRequest)
 
-	webResponse := web.WebResponse{
+	webResponse := web.WebResponse[web.TodolistResponse]{
 		Code:   201,
 		Status: "success",
 		Data:   todolistResponse,
@@ -43,7 +43,7 @@ func (controller *TodolistControllerImpl) Update(writer http.ResponseWriter, req
 	todolistUpdateRequest.Id = todolistId
 
 	todolistResponse := controller.TodolistService.Update(todolistUpdateRequest)
-	webResponse := web.WebResponse{
+	webResponse := web.WebResponse[web.TodolistResponse]{
 		Code:   200,
 		Status: "success",
 		Data:   todolistResponse,
@@ -55,7 +55,7 @@ func (controller *TodolistControllerImpl) Update(writer http.ResponseWriter, req
 func (controller *TodolistControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	todolistId := params.ByName("todolistId")
 	controller.TodolistService.Delete(todolistId)
-	webResponse := web.WebResponse{
+	webResponse := web.WebResponse[struct{}]{
 		Code:   200,
 		Status: "success",
 		Data:   struct{}{},
@@ -66,7 +66,7 @@ func (controller *TodolistControllerImpl) Delete(writer http.ResponseWriter, req
 
 func (controller *TodolistControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	todolistsResponse := controller.TodolistService.FindAll()
-	webResponse := web.WebResponse{
+	webResponse := web.WebResponse[[]web.TodolistResponse]{
 		Code:   200,
 		Status: "success",
 		Data:   todolistsResponse,

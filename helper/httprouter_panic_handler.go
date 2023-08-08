@@ -12,7 +12,7 @@ func internalServerError(writer http.ResponseWriter, request *http.Request, err 
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusInternalServerError)
 
-	webResponse := web.WebResponse{
+	webResponse := web.WebResponse[string]{
 		Code:   500,
 		Status: "failed",
 		Data:   "something went wrong",
@@ -28,7 +28,7 @@ func notFoundError(writer http.ResponseWriter, request *http.Request, err any) b
 		writer.Header().Add("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusNotFound)
 
-		webResponse := web.WebResponse{
+		webResponse := web.WebResponse[string]{
 			Code:   404,
 			Status: "failed",
 			Data:   exception.Error,
@@ -49,7 +49,7 @@ func reqBodyMalformedError(writer http.ResponseWriter, request *http.Request, er
 		writer.Header().Add("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusBadRequest)
 
-		webResponse := web.WebResponse{
+		webResponse := web.WebResponse[string]{
 			Code:   400,
 			Status: "failed",
 			Data:   "request body is invalid",
@@ -70,7 +70,7 @@ func validationError(writer http.ResponseWriter, request *http.Request, err any)
 		writer.Header().Add("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusBadRequest)
 
-		webResponse := web.WebResponse{
+		webResponse := web.WebResponse[string]{
 			Code:   400,
 			Status: "failed",
 			Data:   "request body is invalid",
