@@ -1,336 +1,351 @@
 {
-	"openapi": "3.0.2",
-	"info": {
-		"title": "Todolist JSON V1 RESTful API",
-		"version": "1.0",
-		"contact": {
-			"name": "Syahda Romansyah",
-			"email": "syahdarom@gmail.com"
-		}
-	},
-	"servers": [{ "url": "http://localhost:8080/api" }],
-	"paths": {
-		"/todolists": {
-			"get": {
-				"tags": ["Todolist API"],
-				"description": "Get todolists",
-				"summary": "Get todolists",
-				"responses": {
-					"200": {
-						"description": "Success to get todolists",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"code": {
-											"type": "number"
-										},
-										"status": {
-											"type": "string"
-										},
-										"data": {
-											"type": "array",
-											"items": {
-												"type": "object",
-												"properties": {
-													"id": {
-														"type": "string"
-													},
-													"done": {
-														"type": "boolean"
-													},
-													"tags": {
-														"type": "array",
-														"items": {
-															"type": "string"
-														}
-													},
-													"todolistMessage": {
-														"type": "string"
-													},
-													"createAt": {
-														"type": "string"
-													},
-													"updateAt": {
-														"type": "string"
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			},
-			"post": {
-				"tags": ["Todolist API"],
-				"description": "Create a todolist",
-				"summary": "Create a todolist",
-				"requestBody": {
-					"required": true,
-					"description": "Todolist request body",
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"tags": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"todolistMessage": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"201": {
-						"description": "Success to create a new todolist",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"code": {
-											"type": "number"
-										},
-										"status": {
-											"type": "string"
-										},
-										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"done": {
-													"type": "boolean"
-												},
-												"tags": {
-													"type": "array",
-													"items": {
-														"type": "string"
-													}
-												},
-												"todolistMessage": {
-													"type": "string"
-												},
-												"createAt": {
-													"type": "string"
-												},
-												"updateAt": {
-													"type": "string"
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Failed to create a new todolist",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"code": {
-											"type": "number"
-										},
-										"status": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/todolists/{todolistId}": {
-			"put": {
-				"tags": ["Todolist API"],
-				"description": "Update todolist by id",
-				"summary": "Update todolist by id",
-				"parameters": [
-					{
-						"name": "Todolist id",
-						"in": "query",
-						"required": true,
-						"description": "Todolist id",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"tags": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"todolistMessage": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "Success to update todolist by id",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"code": {
-											"type": "number"
-										},
-										"status": {
-											"type": "string"
-										},
-										"data": {
-											"type": "object",
-											"properties": {
-												"id": {
-													"type": "string"
-												},
-												"done": {
-													"type": "boolean"
-												},
-												"tags": {
-													"type": "array",
-													"items": {
-														"type": "string"
-													}
-												},
-												"todolistMessage": {
-													"type": "string"
-												},
-												"createAt": {
-													"type": "string"
-												},
-												"updateAt": {
-													"type": "string"
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Failed to create a new todolist",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"code": {
-											"type": "number"
-										},
-										"status": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Failed to create a new todolist",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"code": {
-											"type": "number"
-										},
-										"status": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"tags": ["Todolist API"],
-				"description": "Delete todolist by id",
-				"summary": "Delete todolist by id",
-				"parameters": [
-					{
-						"name": "Todolist id",
-						"in": "query",
-						"required": true,
-						"description": "Todolist id",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Success to delete todolist by id",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"code": {
-											"type": "number"
-										},
-										"status": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						}
-					},
-					"404": {
-						"description": "Failed to delete a new todolist",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"code": {
-											"type": "number"
-										},
-										"status": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Todolist JSON V1 RESTful API",
+    "version": "1.0",
+    "contact": {
+      "name": "Syahda Romansyah",
+      "email": "syahdarom@gmail.com"
+    }
+  },
+  "servers": [{ "url": "http://localhost:8080/api" }],
+  "paths": {
+    "/todolists": {
+      "get": {
+        "tags": ["Todolist API"],
+        "description": "Get todolists",
+        "summary": "Get todolists",
+        "responses": {
+          "200": {
+            "description": "Success to get todolists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "done": {
+                            "type": "boolean"
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "todolistMessage": {
+                            "type": "string"
+                          },
+                          "createAt": {
+                            "type": "string"
+                          },
+                          "updateAt": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Todolist API"],
+        "description": "Create a todolist",
+        "summary": "Create a todolist",
+        "requestBody": {
+          "required": true,
+          "description": "Todolist request body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "todolistMessage": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success to create a new todolist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "done": {
+                          "type": "boolean"
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "todolistMessage": {
+                          "type": "string"
+                        },
+                        "createAt": {
+                          "type": "string"
+                        },
+                        "updateAt": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed to create a new todolist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todolists/{todolistId}": {
+      "put": {
+        "tags": ["Todolist API"],
+        "description": "Update todolist by id",
+        "summary": "Update todolist by id",
+        "parameters": [
+          {
+            "name": "Todolist id",
+            "in": "query",
+            "required": true,
+            "description": "Todolist id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "todolistMessage": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success to update todolist by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "done": {
+                          "type": "boolean"
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "todolistMessage": {
+                          "type": "string"
+                        },
+                        "createAt": {
+                          "type": "string"
+                        },
+                        "updateAt": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed to create a new todolist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Failed to create a new todolist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Todolist API"],
+        "description": "Delete todolist by id",
+        "summary": "Delete todolist by id",
+        "parameters": [
+          {
+            "name": "Todolist id",
+            "in": "query",
+            "required": true,
+            "description": "Todolist id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success to delete todolist by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Failed to delete a new todolist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
