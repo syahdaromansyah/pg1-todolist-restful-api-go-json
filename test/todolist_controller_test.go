@@ -22,11 +22,6 @@ import (
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/service"
 )
 
-type TodolistDB struct {
-	Total     int               `json:"total"`
-	TodoLists []domain.Todolist `json:"todolists"`
-}
-
 type WebResponseTest[T any] struct {
 	Code   int    `json:"code"`
 	Status string `json:"status"`
