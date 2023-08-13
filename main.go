@@ -1,10 +1,10 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/helper"
 )
 
 func NewServer(httpRouter *httprouter.Router) *http.Server {
@@ -18,6 +18,7 @@ func main() {
 	dbPath := "./databases/todolist.json"
 	server := InitializeServer(dbPath)
 
-	err := server.ListenAndServe()
-	helper.DoPanicIfError(err)
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatalf("HTTP server ListenAndServe: %v\n", err)
+	}
 }
