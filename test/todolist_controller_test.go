@@ -11,15 +11,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
-	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/app"
-	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/controller"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/helper"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/domain"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/web"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/repository"
-	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/service"
 )
 
 type WebResponseTest[T any] struct {
@@ -30,11 +26,7 @@ type WebResponseTest[T any] struct {
 
 func setupRouterTest() http.Handler {
 	dbPath := "../databases/todolist.json"
-	validate := validator.New()
-	todolistRepository := repository.NewTodolistRepositoryImpl()
-	todolistService := service.NewTodolistServiceImpl(todolistRepository, dbPath, validate)
-	todolistController := controller.NewTodolistControllerImpl(todolistService)
-	httpRouter := app.NewRouter(todolistController)
+	httpRouter := InitializeServerTest(dbPath)
 
 	return httpRouter
 }
