@@ -19,6 +19,6 @@ func main() {
 	server := InitializeServer(dbPath)
 
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("HTTP server ListenAndServe: %v\n", err)
+		log.Fatalf("Error: HTTP server ListenAndServe: %v\n", err)
 	}
 }
