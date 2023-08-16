@@ -24,3 +24,5 @@ go.work
 .temp/
 .tmp/
 tmp/
+
+logs.txt
