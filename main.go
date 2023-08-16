@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/helper"
 )
 
 func main() {
@@ -23,18 +25,26 @@ func main() {
 		<-sigInt
 
 		if err := server.Shutdown(context.Background()); err != nil {
-			log.Printf("Error: HTTP server shutdown: %v\n", err)
+			helper.WriteLogToFile(func() {
+				log.Printf("Error: HTTP server shutdown: %v\n", err)
+			})
 		} else {
-			log.Printf("HTTP server shutdown gracefully\n")
+			helper.WriteLogToFile(func() {
+				log.Printf("HTTP server shutdown gracefully\n")
+			})
 		}
 
 		close(idleConnsClosed)
 	}()
 
-	log.Printf("Listening HTTP server on %s\n", server.Addr)
+	helper.WriteLogToFile(func() {
+		log.Printf("Listening HTTP server on %s\n", server.Addr)
+	})
 
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("Error: HTTP server ListenAndServe: %v\n", err)
+		helper.WriteLogToFile(func() {
+			log.Fatalf("Error: HTTP server ListenAndServe: %v\n", err)
+		})
 	}
 
 	<-idleConnsClosed
