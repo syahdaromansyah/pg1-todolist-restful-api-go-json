@@ -25,4 +25,4 @@ go.work
 .tmp/
 tmp/
 
-logs.txt
+log.txt
