@@ -14,7 +14,7 @@ type TodolistControllerImpl struct {
 	TodolistService service.TodolistService
 }
 
-func NewTodolistControllerImpl(todolistService service.TodolistService) TodolistController {
+func NewTodolistControllerImpl(todolistService service.TodolistService) *TodolistControllerImpl {
 	return &TodolistControllerImpl{
 		TodolistService: todolistService,
 	}
