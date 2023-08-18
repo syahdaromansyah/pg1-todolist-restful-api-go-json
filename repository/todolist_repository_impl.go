@@ -14,7 +14,7 @@ import (
 
 type TodolistRepositoryImpl struct{}
 
-func NewTodolistRepositoryImpl() TodolistRepository {
+func NewTodolistRepositoryImpl() *TodolistRepositoryImpl {
 	return &TodolistRepositoryImpl{}
 }
 
