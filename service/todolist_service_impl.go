@@ -16,7 +16,7 @@ type TodolistServiceImpl struct {
 	Validate           *validator.Validate
 }
 
-func NewTodolistServiceImpl(todolistRepository repository.TodolistRepository, dbPath string, validate *validator.Validate) TodolistService {
+func NewTodolistServiceImpl(todolistRepository repository.TodolistRepository, dbPath string, validate *validator.Validate) *TodolistServiceImpl {
 	return &TodolistServiceImpl{
 		TodolistRepository: todolistRepository,
 		DBPath:             dbPath,
