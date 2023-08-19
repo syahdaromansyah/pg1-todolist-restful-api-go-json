@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/helper"
@@ -12,6 +13,8 @@ import (
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/scheme"
 )
 
+var mutex = &sync.Mutex{}
+
 type TodolistRepositoryImpl struct{}
 
 func NewTodolistRepositoryImpl() *TodolistRepositoryImpl {
@@ -19,6 +22,9 @@ func NewTodolistRepositoryImpl() *TodolistRepositoryImpl {
 }
 
 func (repository *TodolistRepositoryImpl) Save(dbPath string, todolistRequest domain.Todolist) domain.Todolist {
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
@@ -55,6 +61,9 @@ func (repository *TodolistRepositoryImpl) Save(dbPath string, todolistRequest do
 }
 
 func (repository *TodolistRepositoryImpl) Update(dbPath string, todolistRequest domain.Todolist) domain.Todolist {
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
@@ -88,6 +97,9 @@ func (repository *TodolistRepositoryImpl) Update(dbPath string, todolistRequest 
 }
 
 func (repository *TodolistRepositoryImpl) Delete(dbPath string, todolistRequest domain.Todolist) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
@@ -116,6 +128,9 @@ func (repository *TodolistRepositoryImpl) Delete(dbPath string, todolistRequest 
 }
 
 func (repository *TodolistRepositoryImpl) FindById(dbPath, todolistIdParam string) (domain.Todolist, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
@@ -149,6 +164,9 @@ func (repository *TodolistRepositoryImpl) FindById(dbPath, todolistIdParam strin
 }
 
 func (repository *TodolistRepositoryImpl) FindAll(dbPath string) []domain.Todolist {
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	todolistsJsonBytes, err := os.ReadFile(dbPath)
 	helper.DoPanicIfError(err)
 
