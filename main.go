@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,11 +25,11 @@ func main() {
 
 		if err := server.Shutdown(context.Background()); err != nil {
 			helper.WriteLogToFile(func() {
-				log.Printf("Error: HTTP server shutdown: %v\n", err)
+				helper.Logger.Errorf("HTTP server shutdown: %v", err)
 			})
 		} else {
 			helper.WriteLogToFile(func() {
-				log.Printf("HTTP server shutdown gracefully\n")
+				helper.Logger.Info("HTTP server shutdown gracefully")
 			})
 		}
 
@@ -38,12 +37,12 @@ func main() {
 	}()
 
 	helper.WriteLogToFile(func() {
-		log.Printf("Listening HTTP server on %s\n", server.Addr)
+		helper.Logger.Infof("Listening HTTP server on %s", server.Addr)
 	})
 
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
 		helper.WriteLogToFile(func() {
-			log.Fatalf("Error: HTTP server ListenAndServe: %v\n", err)
+			helper.Logger.Fatalf("HTTP server ListenAndServe: %v", err)
 		})
 	}
 
