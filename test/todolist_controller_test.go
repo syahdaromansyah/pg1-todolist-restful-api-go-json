@@ -18,15 +18,17 @@ import (
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/repository"
 )
 
-func setupRouterTest() http.Handler {
-	dbPath := "../databases/todolist.json"
-	httpRouter := InitializeServerTest(dbPath)
+const dbPath = "../databases/todolist.json"
+const todolistsPath = "http://localhost:8080/api/todolists"
+const todolistByIdPath = "http://localhost:8080/api/todolists/%s"
 
+func setupRouterTest() http.Handler {
+	httpRouter := InitializeServerTest(dbPath)
 	return httpRouter
 }
 
 func resetTodolistsDB() {
-	err := os.WriteFile("../databases/todolist.json", []byte(`{ "todolists": [], "total": 0 }`+"\n"), 0644)
+	err := os.WriteFile(dbPath, []byte(`{ "todolists": [], "total": 0 }`+"\n"), 0644)
 	helper.DoPanicIfError(err)
 }
 
@@ -78,7 +80,7 @@ func TestCreateTodolistSuccess(t *testing.T) {
 			helper.DoPanicIfError(err)
 
 			reqBody := strings.NewReader(string(payloadBytes))
-			httpReq := httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/todolists", reqBody)
+			httpReq := httptest.NewRequest(http.MethodPost, todolistsPath, reqBody)
 			httpReq.Header.Add("Content-Type", "application/json")
 
 			recorder := httptest.NewRecorder()
@@ -156,7 +158,7 @@ func TestCreateTodolistFailed(t *testing.T) {
 			helper.DoPanicIfError(err)
 
 			reqBody := strings.NewReader(string(payloadBytes))
-			httpReq := httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/todolists", reqBody)
+			httpReq := httptest.NewRequest(http.MethodPost, todolistsPath, reqBody)
 			httpReq.Header.Add("Content-Type", "application/json")
 
 			recorder := httptest.NewRecorder()
@@ -183,7 +185,6 @@ func TestCreateTodolistFailed(t *testing.T) {
 }
 
 func TestUpdateTodolistSuccess(t *testing.T) {
-	dbPath := "../databases/todolist.json"
 	initialData := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
 		Done:            false,
 		Tags:            []string{"Foo"},
@@ -232,7 +233,7 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 			helper.DoPanicIfError(err)
 
 			reqBody := strings.NewReader(string(payloadBytes))
-			target := fmt.Sprintf("http://localhost:8080/api/todolists/%s", initialData.Id)
+			target := fmt.Sprintf(todolistByIdPath, initialData.Id)
 			httpReq := httptest.NewRequest(http.MethodPut, target, reqBody)
 			httpReq.Header.Add("Content-Type", "application/json")
 
@@ -285,7 +286,6 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 }
 
 func TestUpdateTodolistFailed(t *testing.T) {
-	dbPath := "../databases/todolist.json"
 	initialData := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
 		Done:            false,
 		Tags:            []string{"Foo"},
@@ -349,9 +349,9 @@ func TestUpdateTodolistFailed(t *testing.T) {
 			var target string
 
 			if test.Id == "notfound" {
-				target = fmt.Sprintf("http://localhost:8080/api/todolists/%s", test.Id)
+				target = fmt.Sprintf(todolistByIdPath, test.Id)
 			} else {
-				target = fmt.Sprintf("http://localhost:8080/api/todolists/%s", initialData.Id)
+				target = fmt.Sprintf(todolistByIdPath, initialData.Id)
 			}
 
 			httpReq := httptest.NewRequest(http.MethodPut, target, reqBody)
@@ -392,7 +392,6 @@ func TestUpdateTodolistFailed(t *testing.T) {
 }
 
 func TestDeleteTodolistSuccess(t *testing.T) {
-	dbPath := "../databases/todolist.json"
 	initialData := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
 		Done:            false,
 		Tags:            []string{"Foo"},
@@ -434,7 +433,6 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 }
 
 func TestDeleteTodolistFailed(t *testing.T) {
-	dbPath := "../databases/todolist.json"
 	repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
 		Done:            false,
 		Tags:            []string{"Foo"},
@@ -496,7 +494,7 @@ func TestGetAllTodolistSuccess(t *testing.T) {
 
 	for _, test := range tableTests {
 		for _, data := range test {
-			dbPath := "../databases/todolist.json"
+
 			repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
 				Tags:            data.Tags,
 				TodolistMessage: data.TodolistMessage,
