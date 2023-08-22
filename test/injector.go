@@ -13,7 +13,13 @@ import (
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/service"
 )
 
+var todolistRepoSet = wire.NewSet(repository.NewTodolistRepositoryImpl, wire.Bind(new(repository.TodolistRepository), new(*repository.TodolistRepositoryImpl)))
+
+var todolistServiceSet = wire.NewSet(service.NewTodolistServiceImpl, wire.Bind(new(service.TodolistService), new(*service.TodolistServiceImpl)))
+
+var todolistControllerSet = wire.NewSet(controller.NewTodolistControllerImpl, wire.Bind(new(controller.TodolistController), new(*controller.TodolistControllerImpl)))
+
 func InitializeServerTest(dbPath string) *httprouter.Router {
-	wire.Build(validator.New, repository.NewTodolistRepositoryImpl, service.NewTodolistServiceImpl, controller.NewTodolistControllerImpl, app.NewRouter)
+	wire.Build(validator.New, todolistRepoSet, todolistServiceSet, todolistControllerSet, app.NewRouter)
 	return nil
 }
