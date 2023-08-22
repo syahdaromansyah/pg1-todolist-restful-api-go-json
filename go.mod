@@ -3,16 +3,19 @@ module github.com/syahdaromansyah/pg1-todolist-restful-api-go-json
 go 1.20
 
 require (
+	github.com/go-playground/validator/v10 v10.11.2
+	github.com/google/wire v0.5.0
+	github.com/jaevor/go-nanoid v1.3.0
+	github.com/julienschmidt/httprouter v1.3.0
+	github.com/sirupsen/logrus v1.9.3
+)
+
+require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.11.2 // indirect
-	github.com/google/wire v0.5.0 // indirect
-	github.com/jaevor/go-nanoid v1.3.0 // indirect
-	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
