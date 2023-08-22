@@ -18,12 +18,6 @@ import (
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/repository"
 )
 
-type WebResponseTest[T any] struct {
-	Code   int    `json:"code"`
-	Status string `json:"status"`
-	Data   T      `json:"data"`
-}
-
 func setupRouterTest() http.Handler {
 	dbPath := "../databases/todolist.json"
 	httpRouter := InitializeServerTest(dbPath)
@@ -96,7 +90,7 @@ func TestCreateTodolistSuccess(t *testing.T) {
 			resBodyBytes, err := io.ReadAll(response.Body)
 			helper.DoPanicIfError(err)
 
-			resBody := &WebResponseTest[domain.Todolist]{}
+			resBody := &web.WebResponse[domain.Todolist]{}
 
 			err = json.Unmarshal(resBodyBytes, resBody)
 			helper.DoPanicIfError(err)
@@ -174,7 +168,7 @@ func TestCreateTodolistFailed(t *testing.T) {
 			resBodyBytes, err := io.ReadAll(response.Body)
 			helper.DoPanicIfError(err)
 
-			resBody := &WebResponseTest[string]{}
+			resBody := &web.WebResponse[string]{}
 
 			err = json.Unmarshal(resBodyBytes, resBody)
 			helper.DoPanicIfError(err)
@@ -251,7 +245,7 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 			resBodyBytes, err := io.ReadAll(response.Body)
 			helper.DoPanicIfError(err)
 
-			resBody := &WebResponseTest[domain.Todolist]{}
+			resBody := &web.WebResponse[domain.Todolist]{}
 
 			err = json.Unmarshal(resBodyBytes, resBody)
 			helper.DoPanicIfError(err)
@@ -377,7 +371,7 @@ func TestUpdateTodolistFailed(t *testing.T) {
 			resBodyBytes, err := io.ReadAll(response.Body)
 			helper.DoPanicIfError(err)
 
-			resBody := &WebResponseTest[string]{}
+			resBody := &web.WebResponse[string]{}
 
 			err = json.Unmarshal(resBodyBytes, resBody)
 			helper.DoPanicIfError(err)
@@ -422,7 +416,7 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 	resBodyBytes, err := io.ReadAll(response.Body)
 	helper.DoPanicIfError(err)
 
-	resBody := &WebResponseTest[struct{}]{}
+	resBody := &web.WebResponse[struct{}]{}
 
 	err = json.Unmarshal(resBodyBytes, resBody)
 	helper.DoPanicIfError(err)
@@ -464,7 +458,7 @@ func TestDeleteTodolistFailed(t *testing.T) {
 	resBodyBytes, err := io.ReadAll(response.Body)
 	helper.DoPanicIfError(err)
 
-	resBody := &WebResponseTest[string]{}
+	resBody := &web.WebResponse[string]{}
 
 	err = json.Unmarshal(resBodyBytes, resBody)
 	helper.DoPanicIfError(err)
@@ -524,7 +518,7 @@ func TestGetAllTodolistSuccess(t *testing.T) {
 		resBodyBytes, err := io.ReadAll(response.Body)
 		helper.DoPanicIfError(err)
 
-		resBody := &WebResponseTest[[]domain.Todolist]{}
+		resBody := &web.WebResponse[[]domain.Todolist]{}
 
 		err = json.Unmarshal(resBodyBytes, resBody)
 		helper.DoPanicIfError(err)
