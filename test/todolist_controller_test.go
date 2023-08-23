@@ -520,17 +520,30 @@ func TestUpdateTodolistFailed(t *testing.T) {
 }
 
 func TestDeleteTodolistSuccess(t *testing.T) {
-	initialData := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
-		Done:            false,
+	initialDataOne := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
 		Tags:            []string{"Foo"},
-		TodolistMessage: "Initial Todo",
+		TodolistMessage: "Initial Todo 1",
+	})
+
+	time.Sleep(300 * time.Millisecond)
+
+	initialDataTwo := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+		Tags:            []string{"Boo"},
+		TodolistMessage: "Initial Todo 2",
+	})
+
+	time.Sleep(300 * time.Millisecond)
+
+	initialDataThree := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+		Tags:            []string{"Doo"},
+		TodolistMessage: "Initial Todo 3",
 	})
 
 	time.Sleep(300 * time.Millisecond)
 
 	router := setupRouterTest()
 
-	target := fmt.Sprintf("http://localhost:8080/api/todolists/%s", initialData.Id)
+	target := fmt.Sprintf(todolistByIdPath, initialDataOne.Id)
 	httpReq := httptest.NewRequest(http.MethodDelete, target, nil)
 	httpReq.Header.Add("Content-Type", "application/json")
 
@@ -552,10 +565,12 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 	assert.Equal(t, "success", resBody.Status)
 	assert.Equal(t, struct{}{}, resBody.Data)
 
-	_, err = repository.NewTodolistRepositoryImpl().FindById(dbPath, initialData.Id)
+	todolistDB := readTodolistDB()
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "todolist is not found", err.Error())
+	assert.Equal(t, uint(2), todolistDB.Total)
+	assert.Equal(t, 2, len(todolistDB.Todolists))
+	assert.NotEqual(t, 3, len(todolistDB.Todolists))
+	assert.ElementsMatch(t, []domain.Todolist{initialDataTwo, initialDataThree}, todolistDB.Todolists)
 
 	resetTodolistsDB()
 }
