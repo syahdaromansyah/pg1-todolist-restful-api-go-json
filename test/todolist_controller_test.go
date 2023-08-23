@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/helper"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/domain"
+	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/scheme"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/web"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/repository"
 )
@@ -274,10 +275,23 @@ func TestCreateTodolistFailed(t *testing.T) {
 }
 
 func TestUpdateTodolistSuccess(t *testing.T) {
-	initialData := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
-		Done:            false,
+	initialDataOne := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
 		Tags:            []string{"Foo"},
-		TodolistMessage: "Initial Todo",
+		TodolistMessage: "Initial Todo 1",
+	})
+
+	time.Sleep(300 * time.Millisecond)
+
+	initialDataTwo := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+		Tags:            []string{"Boo"},
+		TodolistMessage: "Initial Todo 2",
+	})
+
+	time.Sleep(300 * time.Millisecond)
+
+	initialDataThree := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+		Tags:            []string{"Doo", "Goo"},
+		TodolistMessage: "Initial Todo 3",
 	})
 
 	time.Sleep(300 * time.Millisecond)
@@ -322,7 +336,7 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 			helper.DoPanicIfError(err)
 
 			reqBody := strings.NewReader(string(payloadBytes))
-			target := fmt.Sprintf(todolistByIdPath, initialData.Id)
+			target := fmt.Sprintf(todolistByIdPath, initialDataOne.Id)
 			httpReq := httptest.NewRequest(http.MethodPut, target, reqBody)
 			httpReq.Header.Add("Content-Type", "application/json")
 
@@ -343,30 +357,55 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 			assert.Equal(t, 200, resBody.Code)
 			assert.Equal(t, "success", resBody.Status)
 
-			todolist, err := repository.NewTodolistRepositoryImpl().FindById(dbPath, initialData.Id)
+			todolistDB := readTodolistDB()
 
-			assert.Nil(t, err)
+			for _, todolist := range todolistDB.Todolists {
+				// Ensure the selected todolist is updated
+				if todolist.Id == initialDataOne.Id {
+					assert.Equal(t, len(test.Tags), len(resBody.Data.Tags))
+					assert.Equal(t, len(test.Tags), len(todolist.Tags))
 
-			assert.Equal(t, len(test.Tags), len(resBody.Data.Tags))
-			assert.Equal(t, len(test.Tags), len(todolist.Tags))
+					assert.Equal(t, test.Tags, resBody.Data.Tags)
+					assert.Equal(t, test.Tags, todolist.Tags)
 
-			assert.Equal(t, test.Tags, resBody.Data.Tags)
-			assert.Equal(t, test.Tags, todolist.Tags)
+					assert.Equal(t, test.TodolistMessage, resBody.Data.TodolistMessage)
+					assert.Equal(t, test.TodolistMessage, todolist.TodolistMessage)
 
-			assert.Equal(t, test.TodolistMessage, resBody.Data.TodolistMessage)
-			assert.Equal(t, test.TodolistMessage, todolist.TodolistMessage)
+					assert.Equal(t, resBody.Data.CreatedAt, todolist.CreatedAt)
+					assert.Equal(t, resBody.Data.UpdatedAt, todolist.UpdatedAt)
 
-			assert.Equal(t, resBody.Data.CreatedAt, todolist.CreatedAt)
-			assert.Equal(t, resBody.Data.UpdatedAt, todolist.UpdatedAt)
+					assert.Equal(t, initialDataOne.Id, resBody.Data.Id)
 
-			assert.Equal(t, initialData.Id, resBody.Data.Id)
+					if test.Done == false {
+						assert.False(t, resBody.Data.Done)
+						assert.False(t, todolist.Done)
+					} else {
+						assert.True(t, resBody.Data.Done)
+						assert.True(t, todolist.Done)
+					}
 
-			if test.Done == false {
-				assert.False(t, resBody.Data.Done)
-				assert.False(t, todolist.Done)
-			} else {
-				assert.True(t, resBody.Data.Done)
-				assert.True(t, todolist.Done)
+					break
+				}
+			}
+
+			// Ensure another todolist is not updated
+			for _, todolist := range todolistDB.Todolists {
+				var anotherTodolist domain.Todolist
+
+				if todolist.Id == initialDataTwo.Id {
+					anotherTodolist = initialDataTwo
+				} else if todolist.Id == initialDataThree.Id {
+					anotherTodolist = initialDataThree
+				} else {
+					continue
+				}
+
+				assert.Equal(t, anotherTodolist.Id, todolist.Id)
+				assert.Equal(t, anotherTodolist.Done, todolist.Done)
+				assert.ElementsMatch(t, anotherTodolist.Tags, todolist.Tags)
+				assert.Equal(t, anotherTodolist.TodolistMessage, todolist.TodolistMessage)
+				assert.Equal(t, anotherTodolist.CreatedAt, todolist.CreatedAt)
+				assert.Equal(t, anotherTodolist.UpdatedAt, todolist.UpdatedAt)
 			}
 		})
 	}
