@@ -576,7 +576,7 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 }
 
 func TestDeleteTodolistFailed(t *testing.T) {
-	repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+	initialData := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
 		Done:            false,
 		Tags:            []string{"Foo"},
 		TodolistMessage: "Initial Todo",
@@ -607,6 +607,13 @@ func TestDeleteTodolistFailed(t *testing.T) {
 	assert.Equal(t, 404, resBody.Code)
 	assert.Equal(t, "failed", resBody.Status)
 	assert.Equal(t, "todolist is not found", resBody.Data)
+
+	todolistDB := readTodolistDB()
+
+	assert.Equal(t, uint(1), todolistDB.Total)
+	assert.Equal(t, 1, len(todolistDB.Todolists))
+	assert.NotEqual(t, 0, len(todolistDB.Todolists))
+	assert.ElementsMatch(t, []domain.Todolist{initialData}, todolistDB.Todolists)
 
 	resetTodolistsDB()
 }
