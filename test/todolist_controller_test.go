@@ -13,6 +13,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/helper"
+	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/lib"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/domain"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/scheme"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/web"
@@ -31,6 +32,42 @@ func setupRouterTest() http.Handler {
 func resetTodolistsDB() {
 	err := os.WriteFile(dbPath, []byte(`{ "todolists": [], "total": 0 }`+"\n"), 0644)
 	helper.DoPanicIfError(err)
+}
+
+func writeTodolistDB(todolistReq *domain.Todolist) *domain.Todolist {
+	todolistsJsonBytes, err := os.ReadFile(dbPath)
+	helper.DoPanicIfError(err)
+
+	todolistsDB := &scheme.TodolistDB{}
+
+	unMarshallErr := json.Unmarshal(todolistsJsonBytes, todolistsDB)
+	helper.DoPanicIfError(unMarshallErr)
+
+	newId := lib.GetRandomStdId32()
+	createdAt := time.Now().Format(time.RFC3339)
+	updatedAt := &createdAt
+
+	todolistsDB.Total = todolistsDB.Total + 1
+	todolistsDB.Todolists = append(todolistsDB.Todolists, domain.Todolist{
+		Id:              newId,
+		Done:            false,
+		Tags:            todolistReq.Tags,
+		TodolistMessage: todolistReq.TodolistMessage,
+		CreatedAt:       createdAt,
+		UpdatedAt:       *updatedAt,
+	})
+
+	marshalledTodolistDB, err := json.Marshal(todolistsDB)
+	helper.DoPanicIfError(err)
+
+	writeFileErr := os.WriteFile(dbPath, marshalledTodolistDB, 0644)
+	helper.DoPanicIfError(writeFileErr)
+
+	todolistReq.Id = newId
+	todolistReq.CreatedAt = createdAt
+	todolistReq.UpdatedAt = *updatedAt
+
+	return todolistReq
 }
 
 func readTodolistDB() *scheme.TodolistDB {
@@ -619,42 +656,41 @@ func TestDeleteTodolistFailed(t *testing.T) {
 }
 
 func TestGetAllTodolistSuccess(t *testing.T) {
-	tableTests := [][]struct {
-		Tags            []string
-		TodolistMessage string
-	}{
-		{},
+	tableTests := [][]domain.Todolist{
 		{
 			{
-				Tags:            []string{"Ray"},
-				TodolistMessage: "Initial Todo 1",
+				Tags:            []string{"Foo"},
+				TodolistMessage: "Initial Todo A",
+			},
+			{
+				Tags:            []string{"Bar"},
+				TodolistMessage: "Initial Todo B",
 			},
 		},
 		{
 			{
-				Tags:            []string{"Foo"},
-				TodolistMessage: "Initial Todo 2",
+				Tags:            []string{"Foo", "Bar"},
+				TodolistMessage: "Initial Todo AA",
 			},
 			{
-				Tags:            []string{"Bar", "Baz"},
-				TodolistMessage: "Initial Todo 3",
+				Tags:            []string{"Bar", "Ray"},
+				TodolistMessage: "Initial Todo AB",
+			},
+			{
+				Tags:            []string{"Far"},
+				TodolistMessage: "Initial Todo AC",
 			},
 		},
 	}
 
-	for _, test := range tableTests {
-		for _, data := range test {
-
-			repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
-				Tags:            data.Tags,
-				TodolistMessage: data.TodolistMessage,
-			})
+	for _, todolistReqs := range tableTests {
+		for _, todolistReq := range todolistReqs {
+			writeTodolistDB(&todolistReq)
 		}
 
 		router := setupRouterTest()
 
-		target := "http://localhost:8080/api/todolists"
-		httpReq := httptest.NewRequest(http.MethodGet, target, nil)
+		httpReq := httptest.NewRequest(http.MethodGet, todolistsPath, nil)
 		httpReq.Header.Add("Content-Type", "application/json")
 
 		recorder := httptest.NewRecorder()
@@ -671,26 +707,12 @@ func TestGetAllTodolistSuccess(t *testing.T) {
 		err = json.Unmarshal(resBodyBytes, resBody)
 		helper.DoPanicIfError(err)
 
+		todolistDB := readTodolistDB()
+
 		assert.Equal(t, 200, resBody.Code)
 		assert.Equal(t, "success", resBody.Status)
-		assert.Equal(t, len(test), len(resBody.Data))
-
-		resBodyTest := []struct {
-			Tags            []string
-			TodolistMessage string
-		}{}
-
-		for _, resBodyData := range resBody.Data {
-			resBodyTest = append(resBodyTest, struct {
-				Tags            []string
-				TodolistMessage string
-			}{
-				Tags:            resBodyData.Tags,
-				TodolistMessage: resBodyData.TodolistMessage,
-			})
-		}
-
-		assert.ElementsMatch(t, test, resBodyTest)
+		assert.Equal(t, len(todolistReqs), len(resBody.Data))
+		assert.ElementsMatch(t, todolistDB.Todolists, resBody.Data)
 
 		resetTodolistsDB()
 	}
