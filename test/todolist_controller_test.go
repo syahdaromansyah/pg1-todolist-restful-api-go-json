@@ -317,21 +317,21 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 		TodolistMessage: "Initial Todo 1",
 	})
 
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 
 	initialDataTwo := writeTodolistDB(&domain.Todolist{
 		Tags:            []string{"Bar"},
 		TodolistMessage: "Initial Todo 2",
 	})
 
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 
 	initialDataThree := writeTodolistDB(&domain.Todolist{
 		Tags:            []string{"Doo", "Goo"},
 		TodolistMessage: "Initial Todo 3",
 	})
 
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 
 	tableTests := []struct {
 		Done            bool
@@ -457,7 +457,7 @@ func TestUpdateTodolistFailed(t *testing.T) {
 		TodolistMessage: "Initial Todo",
 	})
 
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 
 	tableTests := []domain.Todolist{
 		{
@@ -557,21 +557,21 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 		TodolistMessage: "Initial Todo 1",
 	})
 
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 
 	initialDataTwo := writeTodolistDB(&domain.Todolist{
 		Tags:            []string{"Bar"},
 		TodolistMessage: "Initial Todo 2",
 	})
 
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 
 	initialDataThree := writeTodolistDB(&domain.Todolist{
 		Tags:            []string{"Doe"},
 		TodolistMessage: "Initial Todo 3",
 	})
 
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 
 	router := setupRouterTest()
 
@@ -614,7 +614,7 @@ func TestDeleteTodolistFailed(t *testing.T) {
 		TodolistMessage: "Initial Todo",
 	})
 
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 
 	router := setupRouterTest()
 
