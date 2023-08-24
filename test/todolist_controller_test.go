@@ -553,22 +553,22 @@ func TestUpdateTodolistFailed(t *testing.T) {
 }
 
 func TestDeleteTodolistSuccess(t *testing.T) {
-	initialDataOne := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+	initialDataOne := writeTodolistDB(&domain.Todolist{
 		Tags:            []string{"Foo"},
 		TodolistMessage: "Initial Todo 1",
 	})
 
 	time.Sleep(300 * time.Millisecond)
 
-	initialDataTwo := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
-		Tags:            []string{"Boo"},
+	initialDataTwo := writeTodolistDB(&domain.Todolist{
+		Tags:            []string{"Bar"},
 		TodolistMessage: "Initial Todo 2",
 	})
 
 	time.Sleep(300 * time.Millisecond)
 
-	initialDataThree := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
-		Tags:            []string{"Doo"},
+	initialDataThree := writeTodolistDB(&domain.Todolist{
+		Tags:            []string{"Doe"},
 		TodolistMessage: "Initial Todo 3",
 	})
 
@@ -603,7 +603,7 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 	assert.Equal(t, uint(2), todolistDB.Total)
 	assert.Equal(t, 2, len(todolistDB.Todolists))
 	assert.NotEqual(t, 3, len(todolistDB.Todolists))
-	assert.ElementsMatch(t, []domain.Todolist{initialDataTwo, initialDataThree}, todolistDB.Todolists)
+	assert.ElementsMatch(t, []domain.Todolist{*initialDataTwo, *initialDataThree}, todolistDB.Todolists)
 
 	resetTodolistsDB()
 }
