@@ -209,6 +209,15 @@ func TestCreateTodolistSuccess(t *testing.T) {
 				err = json.Unmarshal(resBodyBytes, resBody)
 				helper.DoPanicIfError(err)
 
+				assert.Equal(t, 201, resBody.Code)
+				assert.Equal(t, "success", resBody.Status)
+				assert.Equal(t, todolistReqTest.ExpectedTotalTags, len(resBody.Data.Tags))
+				assert.ElementsMatch(t, todolistReqTags, resBody.Data.Tags)
+				assert.Equal(t, todolistReqMessage, resBody.Data.TodolistMessage)
+				assert.Equal(t, resBody.Data.UpdatedAt, resBody.Data.CreatedAt)
+				assert.NotEmpty(t, resBody.Data.Id)
+				assert.False(t, resBody.Data.Done)
+
 				todolistsRes = append(todolistsRes, domain.Todolist{
 					Id:              resBody.Data.Id,
 					Done:            resBody.Data.Done,
@@ -217,14 +226,6 @@ func TestCreateTodolistSuccess(t *testing.T) {
 					CreatedAt:       resBody.Data.CreatedAt,
 					UpdatedAt:       resBody.Data.UpdatedAt,
 				})
-
-				assert.Equal(t, 201, resBody.Code)
-				assert.Equal(t, "success", resBody.Status)
-				assert.Equal(t, todolistReqTest.ExpectedTotalTags, len(resBody.Data.Tags))
-				assert.Equal(t, todolistReqMessage, resBody.Data.TodolistMessage)
-				assert.Equal(t, resBody.Data.UpdatedAt, resBody.Data.CreatedAt)
-				assert.NotEmpty(t, resBody.Data.Id)
-				assert.False(t, resBody.Data.Done)
 			})
 		}
 
