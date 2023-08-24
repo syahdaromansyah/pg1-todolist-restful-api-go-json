@@ -313,21 +313,21 @@ func TestCreateTodolistFailed(t *testing.T) {
 }
 
 func TestUpdateTodolistSuccess(t *testing.T) {
-	initialDataOne := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+	initialDataOne := writeTodolistDB(&domain.Todolist{
 		Tags:            []string{"Foo"},
 		TodolistMessage: "Initial Todo 1",
 	})
 
 	time.Sleep(300 * time.Millisecond)
 
-	initialDataTwo := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
-		Tags:            []string{"Boo"},
+	initialDataTwo := writeTodolistDB(&domain.Todolist{
+		Tags:            []string{"Bar"},
 		TodolistMessage: "Initial Todo 2",
 	})
 
 	time.Sleep(300 * time.Millisecond)
 
-	initialDataThree := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+	initialDataThree := writeTodolistDB(&domain.Todolist{
 		Tags:            []string{"Doo", "Goo"},
 		TodolistMessage: "Initial Todo 3",
 	})
@@ -361,13 +361,13 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 		},
 	}
 
-	for _, test := range tableTests {
-		t.Run(test.TodolistMessage, func(t *testing.T) {
+	for _, todolistUpdateReq := range tableTests {
+		t.Run(todolistUpdateReq.TodolistMessage, func(t *testing.T) {
 			router := setupRouterTest()
 			payload := &web.TodolistUpdateRequest{
-				Done:            test.Done,
-				Tags:            test.Tags,
-				TodolistMessage: test.TodolistMessage,
+				Done:            todolistUpdateReq.Done,
+				Tags:            todolistUpdateReq.Tags,
+				TodolistMessage: todolistUpdateReq.TodolistMessage,
 			}
 
 			payloadBytes, err := json.Marshal(payload)
@@ -400,21 +400,21 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 			for _, todolist := range todolistDB.Todolists {
 				// Ensure the selected todolist is updated
 				if todolist.Id == initialDataOne.Id {
-					assert.Equal(t, len(test.Tags), len(resBody.Data.Tags))
-					assert.Equal(t, len(test.Tags), len(todolist.Tags))
+					assert.Equal(t, len(todolistUpdateReq.Tags), len(resBody.Data.Tags))
+					assert.Equal(t, len(todolistUpdateReq.Tags), len(todolist.Tags))
 
-					assert.Equal(t, test.Tags, resBody.Data.Tags)
-					assert.Equal(t, test.Tags, todolist.Tags)
+					assert.Equal(t, todolistUpdateReq.Tags, resBody.Data.Tags)
+					assert.Equal(t, todolistUpdateReq.Tags, todolist.Tags)
 
-					assert.Equal(t, test.TodolistMessage, resBody.Data.TodolistMessage)
-					assert.Equal(t, test.TodolistMessage, todolist.TodolistMessage)
+					assert.Equal(t, todolistUpdateReq.TodolistMessage, resBody.Data.TodolistMessage)
+					assert.Equal(t, todolistUpdateReq.TodolistMessage, todolist.TodolistMessage)
 
 					assert.Equal(t, resBody.Data.CreatedAt, todolist.CreatedAt)
 					assert.Equal(t, resBody.Data.UpdatedAt, todolist.UpdatedAt)
 
 					assert.Equal(t, initialDataOne.Id, resBody.Data.Id)
 
-					if test.Done == false {
+					if todolistUpdateReq.Done == false {
 						assert.False(t, resBody.Data.Done)
 						assert.False(t, todolist.Done)
 					} else {
@@ -428,7 +428,7 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 
 			// Ensure another todolist is not updated
 			for _, todolist := range todolistDB.Todolists {
-				var anotherTodolist domain.Todolist
+				var anotherTodolist *domain.Todolist
 
 				if todolist.Id == initialDataTwo.Id {
 					anotherTodolist = initialDataTwo
