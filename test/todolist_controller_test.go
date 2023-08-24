@@ -17,7 +17,6 @@ import (
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/domain"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/scheme"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/model/web"
-	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/repository"
 )
 
 const dbPath = "../databases/todolist.json"
@@ -609,7 +608,7 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 }
 
 func TestDeleteTodolistFailed(t *testing.T) {
-	initialData := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+	initialData := writeTodolistDB(&domain.Todolist{
 		Done:            false,
 		Tags:            []string{"Foo"},
 		TodolistMessage: "Initial Todo",
@@ -619,7 +618,7 @@ func TestDeleteTodolistFailed(t *testing.T) {
 
 	router := setupRouterTest()
 
-	target := "http://localhost:8080/api/todolists/notfound"
+	target := fmt.Sprintf(todolistByIdPath, "notfound")
 	httpReq := httptest.NewRequest(http.MethodDelete, target, nil)
 	httpReq.Header.Add("Content-Type", "application/json")
 
@@ -646,7 +645,7 @@ func TestDeleteTodolistFailed(t *testing.T) {
 	assert.Equal(t, uint(1), todolistDB.Total)
 	assert.Equal(t, 1, len(todolistDB.Todolists))
 	assert.NotEqual(t, 0, len(todolistDB.Todolists))
-	assert.ElementsMatch(t, []domain.Todolist{initialData}, todolistDB.Todolists)
+	assert.ElementsMatch(t, []domain.Todolist{*initialData}, todolistDB.Todolists)
 
 	resetTodolistsDB()
 }
