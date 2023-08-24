@@ -452,7 +452,7 @@ func TestUpdateTodolistSuccess(t *testing.T) {
 }
 
 func TestUpdateTodolistFailed(t *testing.T) {
-	initialData := repository.NewTodolistRepositoryImpl().Save(dbPath, domain.Todolist{
+	initialData := writeTodolistDB(&domain.Todolist{
 		Done:            false,
 		Tags:            []string{"Foo"},
 		TodolistMessage: "Initial Todo",
@@ -460,17 +460,12 @@ func TestUpdateTodolistFailed(t *testing.T) {
 
 	time.Sleep(300 * time.Millisecond)
 
-	tableTests := []struct {
-		Id              string
-		Done            bool
-		Tags            []string
-		TodolistMessage string
-	}{
+	tableTests := []domain.Todolist{
 		{
 			Id:              "notfound",
 			Done:            false,
-			Tags:            []string{"Sport"},
-			TodolistMessage: "Sport Todo",
+			Tags:            []string{"Not Found"},
+			TodolistMessage: "Not Found",
 		},
 		{
 			Done:            false,
@@ -499,13 +494,13 @@ func TestUpdateTodolistFailed(t *testing.T) {
 		},
 	}
 
-	for _, test := range tableTests {
-		t.Run(test.TodolistMessage, func(t *testing.T) {
+	for _, todolistUpdateReq := range tableTests {
+		t.Run(todolistUpdateReq.TodolistMessage, func(t *testing.T) {
 			router := setupRouterTest()
 			payload := &web.TodolistUpdateRequest{
-				Done:            test.Done,
-				Tags:            test.Tags,
-				TodolistMessage: test.TodolistMessage,
+				Done:            todolistUpdateReq.Done,
+				Tags:            todolistUpdateReq.Tags,
+				TodolistMessage: todolistUpdateReq.TodolistMessage,
 			}
 
 			payloadBytes, err := json.Marshal(payload)
@@ -514,8 +509,8 @@ func TestUpdateTodolistFailed(t *testing.T) {
 			reqBody := strings.NewReader(string(payloadBytes))
 			var target string
 
-			if test.Id == "notfound" {
-				target = fmt.Sprintf(todolistByIdPath, test.Id)
+			if todolistUpdateReq.Id == "notfound" {
+				target = fmt.Sprintf(todolistByIdPath, todolistUpdateReq.Id)
 			} else {
 				target = fmt.Sprintf(todolistByIdPath, initialData.Id)
 			}
@@ -528,7 +523,7 @@ func TestUpdateTodolistFailed(t *testing.T) {
 
 			response := recorder.Result()
 
-			if test.Id == "notfound" {
+			if todolistUpdateReq.Id == "notfound" {
 				assert.Equal(t, 404, response.StatusCode)
 			} else {
 				assert.Equal(t, 400, response.StatusCode)
@@ -542,7 +537,7 @@ func TestUpdateTodolistFailed(t *testing.T) {
 			err = json.Unmarshal(resBodyBytes, resBody)
 			helper.DoPanicIfError(err)
 
-			if test.Id == "notfound" {
+			if todolistUpdateReq.Id == "notfound" {
 				assert.Equal(t, 404, resBody.Code)
 				assert.Equal(t, "todolist is not found", resBody.Data)
 			} else {
