@@ -306,6 +306,12 @@ func TestCreateTodolistFailed(t *testing.T) {
 			assert.Equal(t, "failed", resBody.Status)
 			assert.Equal(t, "request body is invalid", resBody.Data)
 
+			// Ensure invalid todolist request is not added to DB
+			todolistDB := readTodolistDB()
+
+			assert.Equal(t, uint(0), todolistDB.Total)
+			assert.Equal(t, 0, len(todolistDB.Todolists))
+
 			resetTodolistsDB()
 		})
 	}
