@@ -60,7 +60,7 @@ func (repository *TodolistRepositoryImpl) Save(dbPath string, todolistRequest do
 	return todolistRequest
 }
 
-func (repository *TodolistRepositoryImpl) Update(dbPath string, todolistRequest domain.Todolist) domain.Todolist {
+func (repository *TodolistRepositoryImpl) Update(dbPath string, todolistRequest domain.Todolist) (domain.Todolist, error) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
@@ -82,21 +82,23 @@ func (repository *TodolistRepositoryImpl) Update(dbPath string, todolistRequest 
 			todolistsDB.Todolists[idx].TodolistMessage = todolistRequest.TodolistMessage
 			todolistsDB.Todolists[idx].UpdatedAt = updatedAt
 
+			todolistRequest.CreatedAt = todolist.CreatedAt
 			todolistRequest.UpdatedAt = updatedAt
-			break
+
+			marshalledTodolistDB, err := json.Marshal(todolistsDB)
+			helper.DoPanicIfError(err)
+
+			writeFileErr := os.WriteFile(dbPath, marshalledTodolistDB, 0644)
+			helper.DoPanicIfError(writeFileErr)
+
+			return todolistRequest, nil
 		}
 	}
 
-	marshalledTodolistDB, err := json.Marshal(todolistsDB)
-	helper.DoPanicIfError(err)
-
-	writeFileErr := os.WriteFile(dbPath, marshalledTodolistDB, 0644)
-	helper.DoPanicIfError(writeFileErr)
-
-	return todolistRequest
+	return todolistRequest, errors.New("todolist is not found")
 }
 
-func (repository *TodolistRepositoryImpl) Delete(dbPath string, todolistRequest domain.Todolist) {
+func (repository *TodolistRepositoryImpl) Delete(dbPath string, todolistIdParam string) error {
 	mutex.Lock()
 	defer mutex.Unlock()
 
@@ -110,21 +112,29 @@ func (repository *TodolistRepositoryImpl) Delete(dbPath string, todolistRequest 
 
 	todolists := todolistsDB.Todolists
 	todolistsDB.Todolists = []domain.Todolist{}
+	todolistIsFounded := false
 
 	for _, todolist := range todolists {
-		if todolistRequest.Id == todolist.Id {
+		if todolistIdParam == todolist.Id {
 			todolistsDB.Total = todolistsDB.Total - 1
+			todolistIsFounded = true
 			continue
 		}
 
 		todolistsDB.Todolists = append(todolistsDB.Todolists, todolist)
 	}
 
-	jsonMarshalledBytes, err := json.Marshal(todolistsDB)
-	helper.DoPanicIfError(err)
+	if todolistIsFounded {
+		jsonMarshalledBytes, err := json.Marshal(todolistsDB)
+		helper.DoPanicIfError(err)
 
-	writeFileErr := os.WriteFile(dbPath, jsonMarshalledBytes, 0644)
-	helper.DoPanicIfError(writeFileErr)
+		writeFileErr := os.WriteFile(dbPath, jsonMarshalledBytes, 0644)
+		helper.DoPanicIfError(writeFileErr)
+
+		return nil
+	}
+
+	return errors.New("todolist is not found")
 }
 
 func (repository *TodolistRepositoryImpl) FindById(dbPath, todolistIdParam string) (domain.Todolist, error) {
