@@ -547,30 +547,32 @@ func TestUpdateTodolistFailed(t *testing.T) {
 }
 
 func TestDeleteTodolistSuccess(t *testing.T) {
-	initialDataOne := writeTodolistDB(&domain.Todolist{
-		Tags:            []string{"Foo"},
-		TodolistMessage: "Initial Todo 1",
-	})
+	var initTodolistData []domain.Todolist
 
-	time.Sleep(1 * time.Millisecond)
+	for _, initTodolist := range []domain.Todolist{
+		{
+			Tags:            []string{"Foo"},
+			TodolistMessage: "Initial Todo 1",
+		},
+		{
+			Tags:            []string{"Bar"},
+			TodolistMessage: "Initial Todo 2",
+		},
+		{
+			Tags:            []string{"Doe"},
+			TodolistMessage: "Initial Todo 3",
+		},
+	} {
+		initTodolistData = append(initTodolistData, *writeTodolistDB(&initTodolist))
+		time.Sleep(1 * time.Millisecond)
+	}
 
-	initialDataTwo := writeTodolistDB(&domain.Todolist{
-		Tags:            []string{"Bar"},
-		TodolistMessage: "Initial Todo 2",
-	})
-
-	time.Sleep(1 * time.Millisecond)
-
-	initialDataThree := writeTodolistDB(&domain.Todolist{
-		Tags:            []string{"Doe"},
-		TodolistMessage: "Initial Todo 3",
-	})
-
-	time.Sleep(1 * time.Millisecond)
+	selectedInitTodolist := initTodolistData[0]
+	anotherInitTodolist := initTodolistData[1:]
 
 	router := setupRouterTest()
 
-	target := fmt.Sprintf(todolistByIdPath, initialDataOne.Id)
+	target := fmt.Sprintf(todolistByIdPath, selectedInitTodolist.Id)
 	httpReq := httptest.NewRequest(http.MethodDelete, target, nil)
 	httpReq.Header.Add("Content-Type", "application/json")
 
@@ -597,7 +599,7 @@ func TestDeleteTodolistSuccess(t *testing.T) {
 	assert.Equal(t, uint(2), todolistDB.Total)
 	assert.Equal(t, 2, len(todolistDB.Todolists))
 	assert.NotEqual(t, 3, len(todolistDB.Todolists))
-	assert.ElementsMatch(t, []domain.Todolist{*initialDataTwo, *initialDataThree}, todolistDB.Todolists)
+	assert.ElementsMatch(t, anotherInitTodolist, todolistDB.Todolists)
 
 	resetTodolistsDB()
 }
@@ -676,6 +678,7 @@ func TestGetAllTodolistSuccess(t *testing.T) {
 	for _, todolistReqs := range tableTests {
 		for _, todolistReq := range todolistReqs {
 			writeTodolistDB(&todolistReq)
+			time.Sleep(1 * time.Millisecond)
 		}
 
 		router := setupRouterTest()
