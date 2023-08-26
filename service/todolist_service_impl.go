@@ -57,13 +57,9 @@ func (service *TodolistServiceImpl) Update(request web.TodolistUpdateRequest) we
 }
 
 func (service *TodolistServiceImpl) Delete(todolistIdParam string) {
-	foundedTodolist, err := service.TodolistRepository.FindById(service.DBPath, todolistIdParam)
-
-	if err != nil {
+	if err := service.TodolistRepository.Delete(service.DBPath, todolistIdParam); err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
-
-	service.TodolistRepository.Delete(service.DBPath, foundedTodolist)
 }
 
 func (service *TodolistServiceImpl) FindAll() []web.TodolistResponse {
