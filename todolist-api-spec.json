@@ -150,7 +150,7 @@
                       "type": "string"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "object"
                     }
                   }
                 }
@@ -256,7 +256,7 @@
                       "type": "string"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "object"
                     }
                   }
                 }
@@ -277,7 +277,7 @@
                       "type": "string"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "object"
                     }
                   }
                 }
@@ -337,7 +337,7 @@
                       "type": "string"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "object"
                     }
                   }
                 }
