@@ -42,19 +42,18 @@ func (service *TodolistServiceImpl) Update(request web.TodolistUpdateRequest) we
 	err := service.Validate.Struct(request)
 	helper.DoPanicIfError(err)
 
-	foundedTodolist, err := service.TodolistRepository.FindById(service.DBPath, request.Id)
+	updatedTodolist, err := service.TodolistRepository.Update(service.DBPath, domain.Todolist{
+		Id:              request.Id,
+		Done:            request.Done,
+		Tags:            request.Tags,
+		TodolistMessage: request.TodolistMessage,
+	})
 
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	foundedTodolist.Tags = request.Tags
-	foundedTodolist.Done = request.Done
-	foundedTodolist.TodolistMessage = request.TodolistMessage
-
-	foundedTodolist = service.TodolistRepository.Update(service.DBPath, foundedTodolist)
-
-	return helper.ToTodolistResponse(foundedTodolist)
+	return helper.ToTodolistResponse(updatedTodolist)
 }
 
 func (service *TodolistServiceImpl) Delete(todolistIdParam string) {
