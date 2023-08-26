@@ -243,7 +243,7 @@
             }
           },
           "400": {
-            "description": "Failed to create a new todolist",
+            "description": "Failed to update todolist by id",
             "content": {
               "application/json": {
                 "schema": {
@@ -264,7 +264,7 @@
             }
           },
           "404": {
-            "description": "Failed to create a new todolist",
+            "description": "Failed to update todolist by id",
             "content": {
               "application/json": {
                 "schema": {
@@ -324,7 +324,7 @@
             }
           },
           "404": {
-            "description": "Failed to delete a new todolist",
+            "description": "Failed to delete todolist by id",
             "content": {
               "application/json": {
                 "schema": {
