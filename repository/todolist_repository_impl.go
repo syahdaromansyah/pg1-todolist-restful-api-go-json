@@ -137,42 +137,6 @@ func (repository *TodolistRepositoryImpl) Delete(dbPath string, todolistIdParam 
 	return errors.New("todolist is not found")
 }
 
-func (repository *TodolistRepositoryImpl) FindById(dbPath, todolistIdParam string) (domain.Todolist, error) {
-	mutex.Lock()
-	defer mutex.Unlock()
-
-	todolistsJsonBytes, err := os.ReadFile(dbPath)
-	helper.DoPanicIfError(err)
-
-	todolistsDB := &scheme.TodolistDB{}
-
-	unMarshallErr := json.Unmarshal(todolistsJsonBytes, todolistsDB)
-	helper.DoPanicIfError(unMarshallErr)
-
-	todolists := todolistsDB.Todolists
-	foundedTodolist := domain.Todolist{}
-
-	for _, todolist := range todolists {
-		if todolistIdParam == todolist.Id {
-			foundedTodolist.Id = todolist.Id
-			foundedTodolist.Done = todolist.Done
-			foundedTodolist.TodolistMessage = todolist.TodolistMessage
-			foundedTodolist.CreatedAt = todolist.CreatedAt
-			foundedTodolist.UpdatedAt = todolist.UpdatedAt
-
-			if len(todolist.Tags) == 0 {
-				foundedTodolist.Tags = []string{}
-			} else {
-				foundedTodolist.Tags = append(foundedTodolist.Tags, todolist.Tags...)
-			}
-
-			return foundedTodolist, nil
-		}
-	}
-
-	return foundedTodolist, errors.New("todolist is not found")
-}
-
 func (repository *TodolistRepositoryImpl) FindAll(dbPath string) []domain.Todolist {
 	mutex.Lock()
 	defer mutex.Unlock()

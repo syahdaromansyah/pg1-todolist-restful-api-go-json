@@ -6,6 +6,5 @@ type TodolistRepository interface {
 	Save(dbPath string, todolistRequest domain.Todolist) domain.Todolist
 	Update(dbPath string, todolistRequest domain.Todolist) (domain.Todolist, error)
 	Delete(dbPath string, todolistIdParam string) error
-	FindById(dbPath string, todolistIdParam string) (domain.Todolist, error)
 	FindAll(dbPath string) []domain.Todolist
 }
