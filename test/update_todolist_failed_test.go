@@ -97,17 +97,17 @@ func TestUpdateTodolistFailed(t *testing.T) {
 			resBodyBytes, err := io.ReadAll(response.Body)
 			helper.DoPanicIfError(err)
 
-			resBody := &web.WebResponse[string]{}
+			resBody := &web.WebResponse[struct{}]{}
 
 			err = json.Unmarshal(resBodyBytes, resBody)
 			helper.DoPanicIfError(err)
 
 			if todolistUpdateReq.Id == "notfound" {
 				assert.Equal(t, 404, resBody.Code)
-				assert.Equal(t, "todolist is not found", resBody.Data)
+				assert.Equal(t, struct{}{}, resBody.Data)
 			} else {
 				assert.Equal(t, 400, resBody.Code)
-				assert.Equal(t, "request body is invalid", resBody.Data)
+				assert.Equal(t, struct{}{}, resBody.Data)
 			}
 
 			assert.Equal(t, "failed", resBody.Status)

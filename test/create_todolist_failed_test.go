@@ -73,14 +73,14 @@ func TestCreateTodolistFailed(t *testing.T) {
 			resBodyBytes, err := io.ReadAll(response.Body)
 			helper.DoPanicIfError(err)
 
-			resBody := &web.WebResponse[string]{}
+			resBody := &web.WebResponse[struct{}]{}
 
 			err = json.Unmarshal(resBodyBytes, resBody)
 			helper.DoPanicIfError(err)
 
 			assert.Equal(t, 400, resBody.Code)
 			assert.Equal(t, "failed", resBody.Status)
-			assert.Equal(t, "request body is invalid", resBody.Data)
+			assert.Equal(t, struct{}{}, resBody.Data)
 
 			// Ensure invalid todolist request is not added to DB
 			todolistDB := readTodolistDB()
