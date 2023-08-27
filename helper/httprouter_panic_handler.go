@@ -12,26 +12,26 @@ func internalServerError(writer http.ResponseWriter, request *http.Request, err 
 	writer.Header().Add("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusInternalServerError)
 
-	webResponse := web.WebResponse[string]{
+	webResponse := web.WebResponse[struct{}]{
 		Code:   http.StatusInternalServerError,
 		Status: "failed",
-		Data:   "something went wrong",
+		Data:   struct{}{},
 	}
 
 	WriteToResponseBody(writer, webResponse, http.StatusInternalServerError)
 }
 
 func notFoundError(writer http.ResponseWriter, request *http.Request, err any) bool {
-	exception, isError := err.(exception.NotFoundError)
+	_, isError := err.(exception.NotFoundError)
 
 	if isError {
 		writer.Header().Add("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusNotFound)
 
-		webResponse := web.WebResponse[string]{
+		webResponse := web.WebResponse[struct{}]{
 			Code:   http.StatusNotFound,
 			Status: "failed",
-			Data:   exception.Error,
+			Data:   struct{}{},
 		}
 
 		WriteToResponseBody(writer, webResponse, http.StatusNotFound)
@@ -49,10 +49,10 @@ func reqBodyMalformedError(writer http.ResponseWriter, request *http.Request, er
 		writer.Header().Add("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusBadRequest)
 
-		webResponse := web.WebResponse[string]{
+		webResponse := web.WebResponse[struct{}]{
 			Code:   http.StatusBadRequest,
 			Status: "failed",
-			Data:   "request body is invalid",
+			Data:   struct{}{},
 		}
 
 		WriteToResponseBody(writer, webResponse, http.StatusBadRequest)
@@ -70,10 +70,10 @@ func validationError(writer http.ResponseWriter, request *http.Request, err any)
 		writer.Header().Add("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusBadRequest)
 
-		webResponse := web.WebResponse[string]{
+		webResponse := web.WebResponse[struct{}]{
 			Code:   http.StatusBadRequest,
 			Status: "failed",
-			Data:   "request body is invalid",
+			Data:   struct{}{},
 		}
 
 		WriteToResponseBody(writer, webResponse, http.StatusBadRequest)
