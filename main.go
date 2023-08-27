@@ -1,30 +1,50 @@
 package main
 
 import (
+	"context"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/app"
-	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/controller"
 	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/helper"
-	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/repository"
-	"github.com/syahdaromansyah/pg1-todolist-restful-api-go-json/service"
-
-	"github.com/go-playground/validator/v10"
 )
 
 func main() {
 	dbPath := "./databases/todolist.json"
-	validate := validator.New()
-	todolistRepository := repository.NewTodolistRepositoryImpl()
-	todolistService := service.NewTodolistServiceImpl(todolistRepository, dbPath, validate)
-	todolistController := controller.NewTodolistControllerImpl(todolistService)
-	httpRouter := app.NewRouter(todolistController)
+	server := InitializeServer(dbPath)
 
-	server := http.Server{
-		Addr:    "localhost:8080",
-		Handler: httpRouter,
+	idleConnsClosed := make(chan struct{})
+
+	go func() {
+		sigInt := make(chan os.Signal, 1)
+
+		signal.Notify(sigInt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, os.Interrupt)
+
+		<-sigInt
+
+		if err := server.Shutdown(context.Background()); err != nil {
+			helper.WriteLogToFile(func() {
+				helper.Logger.Errorf("HTTP server shutdown: %v", err)
+			})
+		} else {
+			helper.WriteLogToFile(func() {
+				helper.Logger.Info("HTTP server shutdown gracefully")
+			})
+		}
+
+		close(idleConnsClosed)
+	}()
+
+	helper.WriteLogToFile(func() {
+		helper.Logger.Infof("Listening HTTP server on %s", server.Addr)
+	})
+
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		helper.WriteLogToFile(func() {
+			helper.Logger.Fatalf("HTTP server ListenAndServe: %v", err)
+		})
 	}
 
-	err := server.ListenAndServe()
-	helper.DoPanicIfError(err)
+	<-idleConnsClosed
 }

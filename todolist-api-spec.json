@@ -150,7 +150,7 @@
                       "type": "string"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "object"
                     }
                   }
                 }
@@ -160,7 +160,7 @@
         }
       }
     },
-    "/todolists/{todolistId}": {
+    "/todolists/:todolistId": {
       "put": {
         "tags": ["Todolist API"],
         "description": "Update todolist by id",
@@ -243,7 +243,7 @@
             }
           },
           "400": {
-            "description": "Failed to create a new todolist",
+            "description": "Failed to update todolist by id",
             "content": {
               "application/json": {
                 "schema": {
@@ -256,7 +256,7 @@
                       "type": "string"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "object"
                     }
                   }
                 }
@@ -264,7 +264,7 @@
             }
           },
           "404": {
-            "description": "Failed to create a new todolist",
+            "description": "Failed to update todolist by id",
             "content": {
               "application/json": {
                 "schema": {
@@ -277,7 +277,7 @@
                       "type": "string"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "object"
                     }
                   }
                 }
@@ -324,7 +324,7 @@
             }
           },
           "404": {
-            "description": "Failed to delete a new todolist",
+            "description": "Failed to delete todolist by id",
             "content": {
               "application/json": {
                 "schema": {
@@ -337,7 +337,7 @@
                       "type": "string"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "object"
                     }
                   }
                 }

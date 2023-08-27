@@ -16,7 +16,7 @@ type TodolistServiceImpl struct {
 	Validate           *validator.Validate
 }
 
-func NewTodolistServiceImpl(todolistRepository repository.TodolistRepository, dbPath string, validate *validator.Validate) TodolistService {
+func NewTodolistServiceImpl(todolistRepository repository.TodolistRepository, dbPath string, validate *validator.Validate) *TodolistServiceImpl {
 	return &TodolistServiceImpl{
 		TodolistRepository: todolistRepository,
 		DBPath:             dbPath,
@@ -42,29 +42,24 @@ func (service *TodolistServiceImpl) Update(request web.TodolistUpdateRequest) we
 	err := service.Validate.Struct(request)
 	helper.DoPanicIfError(err)
 
-	foundedTodolist, err := service.TodolistRepository.FindById(service.DBPath, request.Id)
+	updatedTodolist, err := service.TodolistRepository.Update(service.DBPath, domain.Todolist{
+		Id:              request.Id,
+		Done:            request.Done,
+		Tags:            request.Tags,
+		TodolistMessage: request.TodolistMessage,
+	})
 
 	if err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
 
-	foundedTodolist.Tags = request.Tags
-	foundedTodolist.Done = request.Done
-	foundedTodolist.TodolistMessage = request.TodolistMessage
-
-	foundedTodolist = service.TodolistRepository.Update(service.DBPath, foundedTodolist)
-
-	return helper.ToTodolistResponse(foundedTodolist)
+	return helper.ToTodolistResponse(updatedTodolist)
 }
 
 func (service *TodolistServiceImpl) Delete(todolistIdParam string) {
-	foundedTodolist, err := service.TodolistRepository.FindById(service.DBPath, todolistIdParam)
-
-	if err != nil {
+	if err := service.TodolistRepository.Delete(service.DBPath, todolistIdParam); err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
-
-	service.TodolistRepository.Delete(service.DBPath, foundedTodolist)
 }
 
 func (service *TodolistServiceImpl) FindAll() []web.TodolistResponse {
