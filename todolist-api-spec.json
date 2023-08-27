@@ -160,7 +160,7 @@
         }
       }
     },
-    "/todolists/{todolistId}": {
+    "/todolists/:todolistId": {
       "put": {
         "tags": ["Todolist API"],
         "description": "Update todolist by id",
